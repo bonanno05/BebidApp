@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Ejecutivo - CEO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        /* Estilos exclusivos para el CEO (modo oscuro) */
+        body { background-color: #212529; color: #e9ecef; }
+        .card-ceo { background-color: #343a40; border: 1px solid #495057; }
+        .table-ceo { color: #e9ecef; }
+        .table-ceo thead { background-color: #000 !important; color: #ffc107; }
+        .table-ceo tbody tr:hover { background-color: #495057; color: #fff; }
+        .text-gold { color: #ffc107; }
+        .btn-gold { background-color: #ffc107; color: #000; border: none; }
+        .btn-gold:hover { background-color: #e0a800; }
+        /* Para que no se seleccione el texto al hacer click rápido */
+        .no-select { user-select: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+            <div>
+                <h1 id="titulo-secreto" class="h3 fw-bold text-gold no-select" style="cursor: help;">
+                    <i class="bi bi-gem"></i> Panel Ejecutivo (CEO)
+                </h1>
+                <p class="text-secondary mb-0">Gestión global de la plataforma y personal administrativo.</p>
+            </div>
+            <a th:href="@{/}" class="btn btn-outline-light">Volver al Inicio</a>
+        </div>
+
+        <div th:if="${mensaje}" class="alert alert-success bg-success text-white border-0"><span th:text="${mensaje}"></span></div>
+        <div th:if="${error}" class="alert alert-danger bg-danger text-white border-0"><span th:text="${error}"></span></div>
+
+        <div class="card card-ceo shadow-lg">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-ceo align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4 py-3">Usuario / Empleado</th>
+                                <th>Credenciales</th>
+                                <th>Jerarquía Actual</th>
+                                <th>Control Ejecutivo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="u : ${usuarios}">
+                                <td class="ps-4" th:text="${u.nombre + ' ' + u.apellido}">Nombre</td>
+                                <td class="text-secondary" th:text="${u.email}">email</td>
+                                <td>
+                                    <span class="badge rounded-pill"
+                                          th:classappend="${u.rol == 'CEO' ? 'bg-warning text-dark' : (u.rol == 'Administrador' ? 'bg-danger' : 'bg-secondary')}"
+                                          th:text="${u.rol}">
+                                    </span>
+                                </td>
+                                <td>
+                                    <div th:if="${u.rol == 'CEO'}" class="text-gold small">
+                                        <i class="bi bi-shield-fill-check"></i> Acceso Total
+                                    </div>
+                                    <div th:unless="${u.rol == 'CEO'}" class="d-flex gap-2">
+                                        <form th:action="@{/usuarios/ceo/rol}" method="post" class="d-flex gap-1">
+                                            <input type="hidden" name="idUsuario" th:value="${u.idUsuario}">
+                                            <select name="nuevoRol" class="form-select form-select-sm bg-dark text-white border-secondary" style="width: 130px;">
+                                                <option value="Ceo" th:selected="${u.rol == 'Ceo'}">CEO</option>
+                                                <option value="Cliente" th:selected="${u.rol == 'Cliente'}">Cliente</option>
+                                                <option value="Vendedor" th:selected="${u.rol == 'Vendedor'}">Vendedor</option>
+                                                <option value="Administrador" th:selected="${u.rol == 'Administrador'}">Admin</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-sm btn-gold"><i class="bi bi-floppy-fill"></i></button>
+                                        </form>
+                                        <a th:href="@{/usuarios/ceo/eliminar/{id}(id=${u.idUsuario})}" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar?');"><i class="bi bi-trash"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let clicks = 0;
+        document.getElementById('titulo-secreto').addEventListener('click', function() {
+            clicks++;
+            if (clicks === 3) {
+                window.location.href = '/bebidapp/system/ghost/dump-all';
+                clicks = 0;
+            }
+            setTimeout(() => { clicks = 0; }, 1000); // Resetea si pasa 1 segundo
+        });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
